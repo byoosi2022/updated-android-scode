@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <item
+            android:id="@+id/productFragment"
+            android:title="Products" />
+        <item
+            android:id="@+id/invoiceFragment"
+            android:title="Invoice" />
+        <item
+            android:id="@+id/customerFragment"
+            android:title="Customer" />
+
+    </group>
+    <group>
+        <item
+            android:id="@+id/logout"
+            android:title="Logout" />
+        <item
+            android:id="@+id/PaymentActivityFragment"
+            android:title="Sales Report" />
+    </group>
+</menu>

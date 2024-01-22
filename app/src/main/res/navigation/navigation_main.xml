@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigationMain"
+    app:startDestination="@id/productFragment">
+
+    <fragment
+        android:id="@+id/productFragment"
+        android:name="com.byoosi.pos.ui.home.product.ProductsFragment"
+        android:label="@string/products"
+        tools:layout="@layout/fragment_product">
+        <action
+            android:id="@+id/action_products_fragment_to_invoice_fragment"
+            app:destination="@id/invoiceFragment" />
+        <action
+            android:id="@+id/action_products_fragment_to_customers_fragment"
+            app:destination="@id/customerFragment" />
+        <action
+            android:id="@+id/action_productFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.byoosi.pos.ui.home.cart.CartFragment"
+        android:label="@string/my_cart"
+        tools:layout="@layout/fragment_cart" />
+
+    <fragment
+        android:id="@+id/invoiceFragment"
+        android:name="com.byoosi.pos.ui.home.invoice.InvoiceFragment"
+        android:label="@string/invoice"
+        tools:layout="@layout/fragment_invoice" />
+
+    <fragment
+        android:id="@+id/customerFragment"
+        android:name="com.byoosi.pos.ui.home.customer.CustomerFragment"
+        android:label="@string/customers"
+        tools:layout="@layout/fragment_customers" />
+    <fragment
+        android:id="@+id/PaymentActivityFragment"
+        android:name="com.byoosi.pos.ui.PaymentActivityFragment"
+        android:label="@string/sales_reports"
+        tools:layout="@layout/payment_report" />
+
+</navigation>
