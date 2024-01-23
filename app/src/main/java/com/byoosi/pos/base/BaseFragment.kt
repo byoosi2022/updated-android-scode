@@ -31,7 +31,6 @@ import retrofit2.HttpException
 abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment() {
     val TAG: String = this.javaClass.simpleName
     private var mActivity: BaseActivity? = null
-
     val requestInterface by lazy { RequestInterface.getInstance() }
 
     protected var listJobs = arrayListOf<Job>()

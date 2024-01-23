@@ -54,5 +54,6 @@
     <string name="out_of_stock">Out Of Stock.</string>
     <string name="okay">Okay</string>
     <string name="unknown_status">unknown</string>
+    <string name="please_enter_url">Please Enter Url</string>
 
 </resources>

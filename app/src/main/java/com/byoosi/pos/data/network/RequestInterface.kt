@@ -4,7 +4,7 @@ import android.util.Log
 import com.byoosi.pos.BuildConfig
 import com.byoosi.pos.data.pref.SharedPref
 import com.byoosi.pos.model.*
-import com.byoosi.pos.utils.BASE_URL
+//import com.byoosi.pos.utils.BASE_URL
 import com.byoosi.pos.utils.TIME_OUT
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
@@ -65,17 +65,23 @@ interface RequestInterface {
     @POST("resource/User")
     suspend fun registerUser(@Body map: RegisterRequest): Response<RegisterRequest>
 
-
-
     @GET("method/logout")
     suspend fun logout(): CommonResponse<Any>
 
     companion object {
         @Volatile
         private var INSTANCE: RequestInterface? = null
+        private var baseUrl: String = ""
 
         fun getInstance(): RequestInterface {
+            this.baseUrl = baseUrl
             return INSTANCE ?: synchronized(this) { INSTANCE ?: create().also { INSTANCE = it } }
+        }
+
+        fun setBaseUrl(baseUrl: String) {
+            // Ensure baseUrl has "https://" and ends with "/"
+            this.baseUrl = "https://${baseUrl.trimEnd('/')}/api/"
+            INSTANCE = create()
         }
 
         private fun create(): RequestInterface {
@@ -115,12 +121,16 @@ interface RequestInterface {
 
             // Create Retrofit instance
             return Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(baseUrl)
                 .client(httpClient.build())
                 .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
                 .build()
                 .create(RequestInterface::class.java)
         }
 
+
     }
+
+
+
 }
