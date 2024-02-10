@@ -19,6 +19,7 @@ import android.view.Window
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.LinearLayout
@@ -26,19 +27,25 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.byoosi.pos.R
 import com.byoosi.pos.base.BaseActivity
+import com.byoosi.pos.data.network.RequestInterface
+import com.byoosi.pos.data.pref.SharedPref
 import com.byoosi.pos.model.CancelResponse
 import com.byoosi.pos.model.InvoiceDetail
 import com.byoosi.pos.utils.PrinterCommands
 import com.byoosi.pos.utils.Utils
 import com.byoosi.pos.utils.gone
 import kotlinx.android.synthetic.main.activity_invoice_detail.*
-import kotlinx.android.synthetic.main.cancel_yes_no.*
 import kotlinx.android.synthetic.main.dialog_enter_amount.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.io.OutputStream
 import java.io.UnsupportedEncodingException
 import java.util.*
+
+
 
 /**
  * Created by pintusingh on 27/12/20.
@@ -66,6 +73,8 @@ class InvoiceDetailActivity : BaseActivity(R.layout.activity_invoice_detail), Vi
             setDisplayShowHomeEnabled(true)
             setDisplayHomeAsUpEnabled(true)
         }
+        Log.d("BYOOSI", "BYOOSI Key: ${SharedPref.apiKey}")
+        Log.d("BYOOSI", "BYOOSI Secret: ${SharedPref.apiSecret}")
 
         invoiceId = intent.getStringExtra("invoice_id")
         adapterItems = InvoiceItemAdapter().also { invoiceId?.let { getInvoiceDetail(it) } }
@@ -85,7 +94,6 @@ class InvoiceDetailActivity : BaseActivity(R.layout.activity_invoice_detail), Vi
         }
     }
 
-
     private fun showPriceDialog() {
         try {
             val dialog = Dialog(this)
@@ -96,36 +104,51 @@ class InvoiceDetailActivity : BaseActivity(R.layout.activity_invoice_detail), Vi
             dialog.setContentView(R.layout.dialog_enter_amount)
             dialog.setCanceledOnTouchOutside(true)
             dialog.setCancelable(true)
-            callApi(false, { requestInterface.getModeOfPayment() },
-                {
+
+            // Coroutine scope for handling asynchronous operations
+            CoroutineScope(Dispatchers.Main).launch {
+                try {
+                    // Make the API call using Retrofit suspend function
+                    val response = withContext(Dispatchers.IO) {
+                        // Use the existing instance of RequestInterface
+                        RequestInterface.getInstance().getModeOfPayment()
+                    }
+
+                    // Process the API response
                     dialog.run {
-                        val adapter = ArrayAdapter(
+                        val adapter = ArrayAdapter<String>(
                             context,
                             android.R.layout.simple_spinner_item,
-                            it.message.map { it.name }
+                            response.message.map { it.name ?: "" }
                         )
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         spinnerModeOfPayment.adapter = adapter
+
                         btnContinue.setOnClickListener {
-                            val paymentMode =
-                                adapter.getItem(spinnerModeOfPayment.selectedItemPosition)!!
-                            val priceToPay = etAmount.text.toString().toDouble()
-                            dismiss()
-                            changePaymentStatus(priceToPay, paymentMode);
+                            val selectedPosition = spinnerModeOfPayment.selectedItemPosition
+                            if (selectedPosition != AdapterView.INVALID_POSITION) {
+                                val paymentMode = adapter.getItem(selectedPosition) ?: ""
+                                val priceToPay = etAmount.text.toString().toDouble()
+                                dismiss()
+                                changePaymentStatus(priceToPay, paymentMode)
+                            }
                         }
+
                         show()
                         val params = window?.attributes
                         params?.width = LinearLayout.LayoutParams.MATCH_PARENT
                         params?.height = LinearLayout.LayoutParams.WRAP_CONTENT
                         window?.attributes = params
                     }
+                } catch (e: Exception) {
+                    // Handle API call failure
+                    e.printStackTrace()
                 }
-            )
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_product_detail, menu)
@@ -154,26 +177,37 @@ class InvoiceDetailActivity : BaseActivity(R.layout.activity_invoice_detail), Vi
     }
 
     private fun getInvoiceDetail(invoiceId: String) {
-        callApi(true, {
-            requestInterface.getInvoiceDetail(mapOf("docname" to invoiceId))
-        }, {
-            tvInvoiceNumber.text = it.message.name
-            tvCustomerName.text = it.message.customer_name ?: "-"
-            tvCustomerNumber.text = it.message.contact_mobile ?: "-"
-            tvCustomerEmail.text = it.message.contact_email
-            tvTotal.text = getString(R.string.price, it.message.total)
-            tvPaidAmount.text =
-                getString(R.string.price, it.message.total - it.message.outstanding_amount)
-            tvRemainingAmount.text = getString(R.string.price, it.message.outstanding_amount)
-            invoiceDetail = it.message
-            adapterItems.addAll(it.message.items)
+//         Authorization: token de1c3d8e4b93c6b:3eb87effd0ad4af
 
-            if (it.message.outstanding_amount == 0.0) {
+        val authToken = "token ${SharedPref.apiKey}:${SharedPref.apiSecret}"
+        val requestBody = mapOf("docname" to invoiceId)
+
+        callApi(true, {
+            val response = requestInterface.getInvoiceDetail(authToken, requestBody)
+            tvInvoiceNumber.text = response.message.name
+            tvCustomerName.text = response.message.customer_name ?: "-"
+            tvCustomerNumber.text = response.message.contact_mobile ?: "-"
+            tvCustomerEmail.text = response.message.contact_email
+            tvTotal.text = getString(R.string.price, response.message.total)
+            tvPaidAmount.text =
+                getString(R.string.price, response.message.total - response.message.outstanding_amount)
+            tvRemainingAmount.text = getString(R.string.price, response.message.outstanding_amount)
+            invoiceDetail = response.message
+            adapterItems.addAll(response.message.items)
+
+            if (response.message.outstanding_amount == 0.0) {
                 btnChangePayment.gone()
                 BtnCancel.gone()
             }
+        }, {
+            // Handle onFailure if needed
         })
     }
+
+
+
+
+
     private fun showCancelDialog() {
         val dialog = Dialog(this)
 
@@ -267,7 +301,7 @@ class InvoiceDetailActivity : BaseActivity(R.layout.activity_invoice_detail), Vi
 
             if (it.message.outstanding_amount == 0.0) {
                 btnChangePayment.gone()
-//                BtnCancel.gone()
+                BtnCancel.gone()
             }
 
         })

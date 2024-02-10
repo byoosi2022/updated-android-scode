@@ -4,8 +4,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.text.Editable
-import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -162,20 +160,21 @@ class ProductsFragment : BaseFragment(R.layout.fragment_product), View.OnClickLi
     }
 
     fun getProducts(offset: Int) {
+        val apiParams = mapOf(
+            "offset" to offset,
+            "limit" to 10,
+            "search" to etSearch.text.toString(),
+            "user" to (SharedPref.login?.message?.user ?: "")
+        )
+
         callApi(offset == 0, {
-            val apiParams = mapOf<String, Any>(
-                "offset" to offset,
-                "limit" to 10,
-                "search" to etSearch.text.toString(),
-                "user" to (SharedPref.login?.message?.user ?: "")
+            requestInterface.getProducts(
+                offset = apiParams["offset"] as Int,
+                limit = apiParams["limit"] as Int,
+                search = apiParams["search"] as String?,
+                user = apiParams["user"] as String?
             )
-
-            // Log the API request parameters
-            Log.d("API_LOG", "Sending getProducts request with parameters: $apiParams")
-
-            requestInterface.getProducts(apiParams)
         }, { response ->
-            // Callback function to handle the API response
             response.message.forEach { product ->
                 // Update quantity for each product based on the items in SharedPref.cartItems
                 SharedPref.cartItems.forEach {
@@ -189,14 +188,9 @@ class ProductsFragment : BaseFragment(R.layout.fragment_product), View.OnClickLi
             }
 
             isLoading = false
-
-            // Log the API response
-            Log.d("API_LOG", "getProducts response: $response")
-
-            // Log the SharedPref data after handling the response
-            Log.d("API_LOG", "SharedPref data after getProducts: ${SharedPref.login}")
         })
     }
+
 
 
 }

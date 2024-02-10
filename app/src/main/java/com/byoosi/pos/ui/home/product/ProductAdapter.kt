@@ -8,6 +8,7 @@ import android.view.View.VISIBLE
 import com.byoosi.pos.base.BaseAdapter
 import com.byoosi.pos.model.ProductItem
 import com.byoosi.pos.R
+import com.byoosi.pos.data.pref.SharedPref
 import com.byoosi.pos.utils.gone
 import com.byoosi.pos.utils.visible
 import kotlinx.android.synthetic.main.listitem_product.view.*
@@ -32,6 +33,7 @@ class ProductAdapter : BaseAdapter<ProductItem>(R.layout.listitem_product) {
 
             adapterStock.addAll(item.other_warehouse_stock)
             Log.e("ProductAdapter", "onBind: ${item.other_warehouse_stock.size}", )
+//            Log.d("API_LOG key", "SharedPref data after getProducts: ${SharedPref.login}")
             rvStocks.apply { adapter = adapterStock }
 
             if(adapterStock.itemCount == 0){

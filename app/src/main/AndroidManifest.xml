@@ -17,7 +17,8 @@
         android:windowSoftInputMode="adjustResize">
         <activity
             android:name=".ui.splash.SplashActivity"
-            android:theme="@style/Theme.MyApplication.Translucent">
+            android:theme="@style/Theme.MyApplication.Translucent"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -27,6 +28,8 @@
         <activity android:name=".ui.home.HomeActivity" />
         <activity android:name=".ui.home.cart.SelectCustomerActivity" />
         <activity android:name=".ui.invoice.InvoiceDetailActivity" />
+        <activity android:name=".ui.paymentsummary.Cart.CartActivity" />
+
     </application>
 
 </manifest>

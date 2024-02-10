@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.LinearLayout
@@ -110,14 +111,20 @@ class CustomerFragment : BaseFragment(R.layout.fragment_customers), View.OnClick
                         etMobileNo.text.length < 7 -> etMobileNo.error =
                             getString(R.string.please_enter_valid_mobile_number)
                         else -> {
+                            val customerName = etName.text.toString()
+                            val mobileNo = etMobileNo.text.toString()
+                            val emailId = etEmail.text.toString()
+
                             callApi(true, {
-                                requestInterface.addCustomers(
-                                    mapOf<String, Any>(
-                                        "customer_name" to etName.text.toString(),
-                                        "mobile_no" to etMobileNo.text.toString(),
-                                        "email_id" to etEmail.text.toString()
-                                    )
+                                val customerData = mapOf<String, Any>(
+                                    "customer_name" to customerName,
+                                    "mobile_no" to mobileNo,
+                                    "email_id" to emailId
                                 )
+                                requestInterface.addCustomers(customerData)
+                                // Log the details
+                                println("Added customer: $customerData")
+//                                Log.d("CustomerData", customerData.toString())
                             }, {
                                 dismiss()
                                 getCustomers(0)
@@ -135,6 +142,7 @@ class CustomerFragment : BaseFragment(R.layout.fragment_customers), View.OnClick
             e.printStackTrace()
         }
     }
+
 
     private fun showUserDetailDialog(userItem: UserItem) {
         try {

@@ -5,8 +5,10 @@
             android:id="@+id/productFragment"
             android:title="Products" />
         <item
-            android:id="@+id/invoiceFragment"
+            android:id="@+id/UnpaidInvFragment"
             android:title="Invoice" />
+
+            />
         <item
             android:id="@+id/customerFragment"
             android:title="Customer" />
@@ -19,5 +21,7 @@
         <item
             android:id="@+id/PaymentActivityFragment"
             android:title="Sales Report" />
+
+
     </group>
 </menu>

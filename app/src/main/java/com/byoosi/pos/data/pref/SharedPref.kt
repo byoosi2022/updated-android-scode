@@ -1,8 +1,10 @@
 package com.byoosi.pos.data.pref
 
 
+import android.util.Log
 import com.byoosi.pos.model.Login
 import com.byoosi.pos.model.ProductItem
+import com.byoosi.pos.utils.AppSignatureHelper.TAG
 import com.chibatching.kotpref.KotprefModel
 import com.chibatching.kotpref.gsonpref.gsonNullablePref
 import com.chibatching.kotpref.gsonpref.gsonPref
@@ -16,15 +18,18 @@ object SharedPref : KotprefModel() {
     var apiKey by stringPref()
     var apiSecret by stringPref()
     var login by gsonNullablePref<Login>()
-    var cartItems by gsonPref<ArrayList<ProductItem>>(arrayListOf());
+    var cartItems by gsonPref<ArrayList<ProductItem>>(arrayListOf())
 
     fun setLoginData(data: Login) {
         login = data
         isLogin = true
         apiKey = data.message?.api_key ?: ""
         apiSecret = data.message?.api_secret ?: ""
+        Log.d("SharedPref", "Login data set: $data")
     }
 
-    fun clearPref() = clear()
-
+    fun clearPref() {
+        clear()
+        Log.d("SharedPref", "Shared preferences cleared")
+    }
 }

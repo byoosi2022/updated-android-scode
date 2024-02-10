@@ -8,6 +8,10 @@ import java.io.Serializable
  */
 
 data class PaymentMode(val name: String)
+data class TokenApi(val message: String)
+
+
+
 
 data class InvoiceItem(
     val name: String,

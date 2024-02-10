@@ -1,0 +1,17 @@
+<!-- bottom_navigation_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_home"
+        android:title="Home"
+        android:icon="@drawable/ic_home" />
+
+    <item
+        android:id="@+id/menu_shopping"
+        android:title="Shopping"
+        android:icon="@drawable/ic_shopping_cart" />
+
+    <item
+        android:id="@+id/menu_invoices"
+        android:title="Invoices"
+        android:icon="@drawable/ic_invoice" />
+</menu>

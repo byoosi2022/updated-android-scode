@@ -195,42 +195,42 @@ class CartFragment : BaseFragment(R.layout.fragment_cart), View.OnClickListener 
         })
     }
 
-    private fun getModeOfPayments() {
-        callApi(true, {
-            requestInterface.getModeOfPayment()
-        }, {
-            try {
-                val dialog = Dialog(requireContext())
-                dialog.window?.run {
-                    requestFeature(Window.FEATURE_NO_TITLE)
-                    setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                }
-                dialog.setContentView(R.layout.dialog_enter_amount)
-                dialog.setCanceledOnTouchOutside(true)
-                dialog.setCancelable(true)
-                dialog.run {
-                    val adapter = ArrayAdapter(
-                            context,
-                            android.R.layout.simple_spinner_dropdown_item,
-                            it.message
-                    )
-                    spinnerModeOfPayment.adapter = adapter
-                    btnContinue.setOnClickListener {
-                        paymentMode = adapter.getItem(spinnerModeOfPayment.selectedItemPosition)!!
-                        priceToPay = etAmount.text.toString().toDouble()
-                        dismiss()
-                        createInvoice()
-                    }
-                }
-                dialog.show()
-                val params = dialog.window?.attributes
-                params?.width = LinearLayout.LayoutParams.MATCH_PARENT
-                params?.height = LinearLayout.LayoutParams.WRAP_CONTENT
-                dialog.window?.attributes = params
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        })
-    }
+//    private fun getModeOfPayments() {
+//        callApi(true, {
+//            requestInterface.getModeOfPayment()
+//        }, {
+//            try {
+//                val dialog = Dialog(requireContext())
+//                dialog.window?.run {
+//                    requestFeature(Window.FEATURE_NO_TITLE)
+//                    setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//                }
+//                dialog.setContentView(R.layout.dialog_enter_amount)
+//                dialog.setCanceledOnTouchOutside(true)
+//                dialog.setCancelable(true)
+//                dialog.run {
+//                    val adapter = ArrayAdapter(
+//                            context,
+//                            android.R.layout.simple_spinner_dropdown_item,
+//                            it.message
+//                    )
+//                    spinnerModeOfPayment.adapter = adapter
+//                    btnContinue.setOnClickListener {
+//                        paymentMode = adapter.getItem(spinnerModeOfPayment.selectedItemPosition)!!
+//                        priceToPay = etAmount.text.toString().toDouble()
+//                        dismiss()
+//                        createInvoice()
+//                    }
+//                }
+//                dialog.show()
+//                val params = dialog.window?.attributes
+//                params?.width = LinearLayout.LayoutParams.MATCH_PARENT
+//                params?.height = LinearLayout.LayoutParams.WRAP_CONTENT
+//                dialog.window?.attributes = params
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        })
+//    }
 }
 
